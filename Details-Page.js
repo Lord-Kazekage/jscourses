@@ -1,38 +1,38 @@
 const loader = document.getElementById("loader");
 const grid = document.getElementById("grid");
 
-window.addEventListener("DOMContentLoaded", () => {
-  const course = JSON.parse(localStorage.getItem("selectedCourse") || "{}");
+const params = new URLSearchParams(window.location.search);
+const data1 = params.get("data");
+const CoursesArray = JSON.parse(decodeURI(data1));
+const id = params.get("id");
+if (data1) loader.style.display = "none";
+console.log("Array", CoursesArray);
+function renderCourseDetails() {
+  const singleCourse = CoursesArray.find((course) => course.id == id);
 
-  if (!course || Object.keys(course).length === 0) {
-    grid.innerHTML = "<p>No course selected!</p>";
-    loader.style.display = "none";
+  if (!singleCourse) {
+    grid.innerHTML = "<p>Course not found</p>";
     return;
   }
 
-  renderCourseDetails(course);
-  loader.style.display = "none";
-});
-
-function renderCourseDetails(course) {
   grid.innerHTML = `
     <div class="detail-card">
-      <img class="detail-image" src="${course.image}" alt="${
-    course.course_name
+      <img class="detail-image" src="${singleCourse.image}" alt="${
+    singleCourse.course_name
   }" loading="lazy">
       <div class="detail-card-content">
-        <h2>${course.course_name}</h2>
-        <p><strong>Platform:</strong> ${course.platform}</p>
-        <p>${course.description}</p>
-        <p><strong>Duration:</strong> ${course.duration}</p>
-        <p><strong>Discount Status:</strong> ${
-          course.price.toLowerCase() === "free"
-            ? "This course is free"
-            : course.discountApplied
-            ? "Discount Applied"
-            : "Discount Not Applied"
-        }</p>
-        <p><strong>Price:</strong> <span>${course.price}</span></p>
+        <h2>${singleCourse.course_name}</h2>
+        <p><strong>Platform:</strong> ${singleCourse.platform}</p>
+        <p>${singleCourse.description}</p>
+        <p><strong>Duration:</strong> ${singleCourse.duration}</p>
+       <p><strong>Discount Status:</strong> ${
+         singleCourse.price.toLowerCase() === "free"
+           ? "This course is free"
+           : singleCourse.discountApplied
+           ? "Discount Applied of " + singleCourse.discountAmount + " Rs"
+           : "No Discount Applied Yet"
+       }</p>
+        <p><strong>Price:</strong> <span>${singleCourse.price}</span></p>
         <button class="detail-btn-home">
           <a href="offer.html">Back to Home</a>
         </button>
@@ -40,3 +40,4 @@ function renderCourseDetails(course) {
     </div>
   `;
 }
+renderCourseDetails();
